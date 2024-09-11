@@ -10,11 +10,11 @@ while true; do
     # API'den verileri çek
     fees=$(curl -s "$api_url")
     
-    # JSON'dan halfHourFee değerini al
-    halfHourFee=$(echo "$fees" | jq '.halfHourFee')
+    # JSON'dan halfHourFee değerini al ve sayıya çevir
+    halfHourFee=$(echo "$fees" | jq '.halfHourFee' | tr -d '"')
 
-    # halfHourFee 100'den küçük mü kontrol et
-    if [ "$halfHourFee" -lt 100 ]; then
+    # Kontrol: halfHourFee 100'den küçük mü?
+    if [ "$halfHourFee" -lt 100 ];then
         fee_rate=$halfHourFee
         echo "Fee rate $fee_rate olarak belirlendi, komut çalıştırılıyor."
 
@@ -27,10 +27,12 @@ while true; do
             echo "Komut başarısız oldu, hata kodu: $result"
             exit 1
         fi
+        # Mint işlemi başarılı, bekleme yok
+        continue
     else
         echo "Fee rate $halfHourFee 100'den büyük, komut çalıştırılmayacak."
     fi
 
-    # Kontrolden sonra 3 saniye bekle
+    # Eğer mint işlemi yapılmadıysa, 3 saniye bekle
     sleep 3
 done
